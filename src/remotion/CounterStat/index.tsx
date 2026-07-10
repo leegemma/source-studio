@@ -28,9 +28,9 @@ export const counterStatSchema = z.object({
 export const defaultCounterStatProps: z.infer<typeof counterStatSchema> = {
   target: 795,
   label: "million people",
-  bgColor: "#2E4C18", // Fern Green
-  numberColor: "#FFEBD2", // Creamy Peach
-  labelColor: "#FC6F2F", // Tangy Orange
+  bgColor: "#3B5FE2",
+  numberColor: "#FFFFFF",
+  labelColor: "#4ADE80",
 };
 
 export const CounterStat: React.FC<z.infer<typeof counterStatSchema>> = ({

@@ -14,6 +14,7 @@ const { fontFamily } = loadFont("normal", {
 export const pieClockTimerSchema = z.object({
   target: z.number(),
   label: z.string(),
+  fontSize: z.number(),
   discColor: zColor(),
   wedgeColor: zColor(),
   tickColor: zColor(),
@@ -23,15 +24,21 @@ export const pieClockTimerSchema = z.object({
 export const defaultPieClockTimerProps: z.infer<typeof pieClockTimerSchema> = {
   target: 36,
   label: "분",
+  fontSize: 190,
   discColor: "#FFFFFF",
   wedgeColor: "#E3E3E3",
   tickColor: "#9CA3AF",
   numberColor: "#111111",
 };
 
+// label font stays proportional to the number so the two keep reading as
+// one unit as fontSize is scaled up/down.
+const LABEL_TO_NUMBER_RATIO = 68 / 190;
+
 export const PieClockTimer: React.FC<z.infer<typeof pieClockTimerSchema>> = ({
   target,
   label,
+  fontSize,
   discColor,
   wedgeColor,
   tickColor,
@@ -96,7 +103,7 @@ export const PieClockTimer: React.FC<z.infer<typeof pieClockTimerSchema>> = ({
             style={{
               fontFamily: "Helvetica, Arial, sans-serif",
               fontWeight: 900,
-              fontSize: 190,
+              fontSize,
               lineHeight: 1,
               color: numberColor,
             }}
@@ -107,7 +114,7 @@ export const PieClockTimer: React.FC<z.infer<typeof pieClockTimerSchema>> = ({
             style={{
               fontFamily,
               fontWeight: 900,
-              fontSize: 68,
+              fontSize: fontSize * LABEL_TO_NUMBER_RATIO,
               lineHeight: 1,
               color: numberColor,
               marginLeft: 6,

@@ -18,13 +18,27 @@ const Home: NextPage = () => {
     Object.fromEntries(templates.map((t) => [t.id, { ...t.defaultProps }])),
   );
 
+  const [durationSecondsByTemplate, setDurationSecondsByTemplate] = useState<
+    Record<string, number>
+  >(() =>
+    Object.fromEntries(
+      templates.map((t) => [t.id, t.durationInFrames / t.fps]),
+    ),
+  );
+
   const inputProps = propsByTemplate[template.id];
+  const durationSeconds = durationSecondsByTemplate[template.id];
+  const durationInFrames = Math.max(1, Math.round(durationSeconds * template.fps));
 
   const onFieldChange = (key: string, value: string | number) => {
     setPropsByTemplate((prev) => ({
       ...prev,
       [template.id]: { ...prev[template.id], [key]: value },
     }));
+  };
+
+  const onDurationChange = (seconds: number) => {
+    setDurationSecondsByTemplate((prev) => ({ ...prev, [template.id]: seconds }));
   };
 
   const playerKey = useMemo(() => template.id, [template.id]);
@@ -58,7 +72,7 @@ const Home: NextPage = () => {
             key={playerKey}
             component={template.component}
             inputProps={inputProps}
-            durationInFrames={template.durationInFrames}
+            durationInFrames={durationInFrames}
             fps={template.fps}
             compositionHeight={template.height}
             compositionWidth={template.width}
@@ -80,6 +94,18 @@ const Home: NextPage = () => {
         </span>
         <div className="text-sm font-medium mb-4">{template.label}</div>
 
+        <div className="flex flex-col gap-1.5 mb-3">
+          <span className="text-sm text-subtitle">길이 (초)</span>
+          <input
+            type="number"
+            min={0.1}
+            step={0.1}
+            value={durationSeconds}
+            onChange={(e) => onDurationChange(Number(e.currentTarget.value))}
+            className="w-20 leading-[1.4] rounded-geist bg-background px-2.5 py-1.5 text-foreground text-sm border border-unfocused-border-color transition-colors duration-150 ease-in-out focus:border-focused-border-color outline-none"
+          />
+        </div>
+
         <TemplateForm
           fields={template.fields}
           values={inputProps}
@@ -89,6 +115,7 @@ const Home: NextPage = () => {
         <RenderControls
           templateId={template.id}
           inputProps={inputProps}
+          durationInFrames={durationInFrames}
         ></RenderControls>
       </div>
     </div>

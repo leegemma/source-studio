@@ -5,10 +5,11 @@ import { ApiResponse } from "./api-response";
 export const renderVideo = async ({
   id,
   inputProps,
+  durationInFrames,
 }: z.infer<typeof RenderRequest>): Promise<RenderResponse> => {
   const result = await fetch("/api/render", {
     method: "post",
-    body: JSON.stringify({ id, inputProps }),
+    body: JSON.stringify({ id, inputProps, durationInFrames }),
     headers: {
       "content-type": "application/json",
     },

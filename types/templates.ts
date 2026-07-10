@@ -36,8 +36,25 @@ import {
 export type TemplateField = {
   key: string;
   label: string;
-  type: "text" | "number" | "color";
+  type: "text" | "number" | "color" | "slider";
+  // Quick-pick hex swatches shown under a color field, e.g. a brand palette.
+  palette?: string[];
+  // Range bounds for "slider" fields.
+  min?: number;
+  max?: number;
+  step?: number;
 };
+
+export const COUNTER_STAT_PALETTE = [
+  "#FFEBD2",
+  "#E1EF97",
+  "#2E4C18",
+  "#FC6F2F",
+  // original default scheme
+  "#3B5FE2",
+  "#FFFFFF",
+  "#4ADE80",
+];
 
 export type Template = {
   id: string;
@@ -90,9 +107,19 @@ export const templates: Template[] = [
     fields: [
       { key: "target", label: "목표 숫자", type: "number" },
       { key: "label", label: "라벨", type: "text" },
-      { key: "bgColor", label: "배경색", type: "color" },
-      { key: "numberColor", label: "숫자 색상", type: "color" },
-      { key: "labelColor", label: "라벨 색상", type: "color" },
+      { key: "bgColor", label: "배경색", type: "color", palette: COUNTER_STAT_PALETTE },
+      {
+        key: "numberColor",
+        label: "숫자 색상",
+        type: "color",
+        palette: COUNTER_STAT_PALETTE,
+      },
+      {
+        key: "labelColor",
+        label: "라벨 색상",
+        type: "color",
+        palette: COUNTER_STAT_PALETTE,
+      },
     ],
   },
   {
@@ -108,6 +135,7 @@ export const templates: Template[] = [
     fields: [
       { key: "target", label: "목표 숫자", type: "number" },
       { key: "label", label: "라벨", type: "text" },
+      { key: "fontSize", label: "텍스트 크기", type: "slider", min: 60, max: 360, step: 20 },
       { key: "discColor", label: "원판 색상", type: "color" },
       { key: "wedgeColor", label: "웨지 색상", type: "color" },
       { key: "tickColor", label: "눈금 색상", type: "color" },

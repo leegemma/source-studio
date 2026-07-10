@@ -39,7 +39,10 @@ export const POST = executeApi(RenderRequest, async (req, body) => {
   const outputLocation = path.join(RENDERS_DIR, fileName);
 
   await renderMedia({
-    composition,
+    composition: {
+      ...composition,
+      durationInFrames: body.durationInFrames ?? composition.durationInFrames,
+    },
     serveUrl,
     codec: "h264",
     outputLocation,

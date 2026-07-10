@@ -18,7 +18,11 @@ export type State =
       status: "done";
     };
 
-export const useRendering = (id: string, inputProps: Record<string, unknown>) => {
+export const useRendering = (
+  id: string,
+  inputProps: Record<string, unknown>,
+  durationInFrames: number,
+) => {
   const [state, setState] = useState<State>({
     status: "init",
   });
@@ -28,7 +32,7 @@ export const useRendering = (id: string, inputProps: Record<string, unknown>) =>
       status: "invoking",
     });
     try {
-      const { url, size } = await renderVideo({ id, inputProps });
+      const { url, size } = await renderVideo({ id, inputProps, durationInFrames });
       setState({
         status: "done",
         url,
@@ -40,7 +44,7 @@ export const useRendering = (id: string, inputProps: Record<string, unknown>) =>
         error: err as Error,
       });
     }
-  }, [id, inputProps]);
+  }, [id, inputProps, durationInFrames]);
 
   const undo = useCallback(() => {
     setState({ status: "init" });
