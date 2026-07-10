@@ -25,7 +25,7 @@ export const RenderControls: React.FC<{
             loading={state.status === "invoking"}
             onClick={renderMedia}
           >
-            Render video
+            영상 렌더링
           </Button>
           {state.status === "error" ? (
             <ErrorComp message={state.error.message}></ErrorComp>

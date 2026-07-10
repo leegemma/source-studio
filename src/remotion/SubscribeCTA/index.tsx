@@ -47,7 +47,7 @@ export const subscribeCtaSchema = z.object({
 
 export const defaultSubscribeCtaProps: z.infer<typeof subscribeCtaSchema> = {
   captionText: "다음주에도 꿀피부 레시피를 보고싶다면",
-  buttonText: "구독하기 (Subscribe)",
+  buttonText: "구독",
   bgColor: "#000000",
   buttonColor: "#E53935",
   captionColor: "#333333",
