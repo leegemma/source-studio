@@ -1,0 +1,125 @@
+import { loadFont } from "@remotion/google-fonts/NotoSansKR";
+import { zColor } from "@remotion/zod-types";
+import React from "react";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { z } from "zod";
+import { TickMarks } from "./TickMarks";
+import { CIRCLE_SIZE, COUNT_END_FRAME } from "./constants";
+
+const { fontFamily } = loadFont("normal", {
+  weights: ["900"],
+  subsets: ["korean"],
+});
+
+export const pieClockTimerSchema = z.object({
+  target: z.number(),
+  label: z.string(),
+  discColor: zColor(),
+  wedgeColor: zColor(),
+  tickColor: zColor(),
+  numberColor: zColor(),
+});
+
+export const defaultPieClockTimerProps: z.infer<typeof pieClockTimerSchema> = {
+  target: 36,
+  label: "분",
+  discColor: "#FFFFFF",
+  wedgeColor: "#E3E3E3",
+  tickColor: "#9CA3AF",
+  numberColor: "#111111",
+};
+
+export const PieClockTimer: React.FC<z.infer<typeof pieClockTimerSchema>> = ({
+  target,
+  label,
+  discColor,
+  wedgeColor,
+  tickColor,
+  numberColor,
+}) => {
+  const frame = useCurrentFrame();
+
+  const count = Math.round(
+    interpolate(frame, [0, COUNT_END_FRAME], [0, target], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    }),
+  );
+
+  const progressDeg = interpolate(frame, [0, COUNT_END_FRAME], [0, 360], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
+      <div
+        style={{
+          position: "relative",
+          width: CIRCLE_SIZE,
+          height: CIRCLE_SIZE,
+        }}
+      >
+        {/* base white disc */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: "50%",
+            background: discColor,
+            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.15)",
+          }}
+        />
+
+        {/* pie wedge — empty at 0deg, full circle at 360deg, starts at 12 o'clock */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: "50%",
+            background: `conic-gradient(${wedgeColor} 0deg ${progressDeg}deg, transparent ${progressDeg}deg 360deg)`,
+          }}
+        />
+
+        <TickMarks tickColor={tickColor} />
+
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "Helvetica, Arial, sans-serif",
+              fontWeight: 900,
+              fontSize: 190,
+              lineHeight: 1,
+              color: numberColor,
+            }}
+          >
+            {count}
+          </div>
+          <div
+            style={{
+              fontFamily,
+              fontWeight: 900,
+              fontSize: 68,
+              lineHeight: 1,
+              color: numberColor,
+              marginLeft: 6,
+              marginBottom: -2,
+            }}
+          >
+            {label}
+          </div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+export default PieClockTimer;

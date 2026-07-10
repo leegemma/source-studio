@@ -3,43 +3,66 @@
 import { Player } from "@remotion/player";
 import type { NextPage } from "next";
 import { useMemo, useState } from "react";
-import { z } from "zod";
-import {
-  CompositionProps,
-  defaultMyCompProps,
-  DURATION_IN_FRAMES,
-  VIDEO_FPS,
-  VIDEO_HEIGHT,
-  VIDEO_WIDTH,
-} from "../../types/constants";
 import { RenderControls } from "../components/RenderControls";
 import { Spacing } from "../components/Spacing";
-import { Tips } from "../components/Tips";
-import { Main } from "../remotion/MyComp/Main";
+import { TemplateForm } from "../components/TemplateForm";
+import { getTemplate, templates } from "../../types/templates";
 
 const Home: NextPage = () => {
-  const [text, setText] = useState<string>(defaultMyCompProps.title);
+  const [templateId, setTemplateId] = useState<string>(templates[0].id);
+  const template = getTemplate(templateId) ?? templates[0];
 
-  const inputProps: z.infer<typeof CompositionProps> = useMemo(() => {
-    return {
-      title: text,
-    };
-  }, [text]);
+  const [propsByTemplate, setPropsByTemplate] = useState<
+    Record<string, Record<string, unknown>>
+  >(() =>
+    Object.fromEntries(templates.map((t) => [t.id, { ...t.defaultProps }])),
+  );
+
+  const inputProps = propsByTemplate[template.id];
+
+  const onFieldChange = (key: string, value: string | number) => {
+    setPropsByTemplate((prev) => ({
+      ...prev,
+      [template.id]: { ...prev[template.id], [key]: value },
+    }));
+  };
+
+  const playerKey = useMemo(() => template.id, [template.id]);
 
   return (
-    <div>
-      <div className="max-w-screen-md m-auto mb-5 px-4">
-        <div className="overflow-hidden rounded-geist shadow-[0_0_200px_rgba(0,0,0,0.15)] mb-10 mt-16">
+    <div className="flex h-screen overflow-hidden">
+      {/* left: template list */}
+      <div className="w-56 shrink-0 border-r border-unfocused-border-color p-4 flex flex-col gap-1 overflow-y-auto">
+        <span className="text-xs uppercase tracking-wide text-subtitle px-2 mb-1">
+          템플릿
+        </span>
+        {templates.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTemplateId(t.id)}
+            className={`text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
+              t.id === template.id
+                ? "bg-unfocused-border-color text-foreground"
+                : "text-subtitle hover:bg-unfocused-border-color/50"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* center: preview */}
+      <div className="flex-1 flex items-center justify-center p-8 overflow-auto">
+        <div className="w-full max-w-[360px] overflow-hidden rounded-geist border border-white/25">
           <Player
-            component={Main}
+            key={playerKey}
+            component={template.component}
             inputProps={inputProps}
-            durationInFrames={DURATION_IN_FRAMES}
-            fps={VIDEO_FPS}
-            compositionHeight={VIDEO_HEIGHT}
-            compositionWidth={VIDEO_WIDTH}
+            durationInFrames={template.durationInFrames}
+            fps={template.fps}
+            compositionHeight={template.height}
+            compositionWidth={template.width}
             style={{
-              // Can't use tailwind class for width since player's default styles take presedence over tailwind's,
-              // but not over inline styles
               width: "100%",
             }}
             controls
@@ -48,16 +71,25 @@ const Home: NextPage = () => {
             initiallyMuted
           />
         </div>
+      </div>
+
+      {/* right: settings */}
+      <div className="w-80 shrink-0 border-l border-unfocused-border-color p-5 overflow-y-auto flex flex-col">
+        <span className="text-xs uppercase tracking-wide text-subtitle mb-3">
+          설정
+        </span>
+        <div className="text-sm font-medium mb-4">{template.label}</div>
+
+        <TemplateForm
+          fields={template.fields}
+          values={inputProps}
+          onFieldChange={onFieldChange}
+        />
+        <Spacing></Spacing>
         <RenderControls
-          text={text}
-          setText={setText}
+          templateId={template.id}
           inputProps={inputProps}
         ></RenderControls>
-        <Spacing></Spacing>
-        <Spacing></Spacing>
-        <Spacing></Spacing>
-        <Spacing></Spacing>
-        <Tips></Tips>
       </div>
     </div>
   );

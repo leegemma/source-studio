@@ -19,10 +19,6 @@ export const DownloadButton: React.FC<{
   state: State;
   undo: () => void;
 }> = ({ state, undo }) => {
-  if (state.status === "rendering") {
-    return <Button disabled>Download video</Button>;
-  }
-
   if (state.status !== "done") {
     throw new Error("Download button should not be rendered when not done");
   }

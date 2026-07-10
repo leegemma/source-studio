@@ -1,88 +1,31 @@
-<img src="https://github.com/remotion-dev/template-next/assets/1629785/9092db5f-7c0c-4d38-97c4-5f5a61f5cc098" />
-<br/>
-<br/>
+# motion-graphics-studio
 
-This is a Next.js template for building programmatic video apps, with [`@remotion/player`](https://remotion.dev/player) and [`@remotion/lambda`](https://remotion.dev/lambda) built in.
+로컬 전용 Remotion 영상 템플릿 사이트. Next.js + `@remotion/player`로 실시간 미리보기하고, 렌더링은 AWS 없이 로컬에서 `@remotion/renderer`로 처리한다.
 
-This template uses the Next.js App directory, with TailwindCSS. There is a [Non-TailwindCSS version](https://github.com/remotion-dev/template-next-app-dir), and a [Pages directory version](https://github.com/remotion-dev/template-next-pages-dir) of this template available.
+## 템플릿
 
-<img src="https://github.com/remotion-dev/template-next/assets/1629785/c9c2e5ca-2637-4ec8-8e40-a8feb5740d88" />
+- `SubscribeCTA` — 구독 유도 오버레이
+- `CounterStat` — 카운터 통계 카드
+- `PieClockTimer` — 파이 시계 타이머
 
-## Getting Started
+각 템플릿의 라벨/숫자/색상은 사이트에서 폼으로 직접 편집 가능. 필드 정의는 [types/templates.ts](types/templates.ts)에 있다.
 
-[Use this template](https://github.com/new?template_name=template-next-app-dir-tailwind&template_owner=remotion-dev) to clone it into your GitHub account. Run
+## 사용법
 
-```
-npm i
-```
-
-afterwards. Alternatively, use this command to scaffold a project:
-
-```
-npx create-video@latest --next-tailwind
-```
-
-## Commands
-
-Start the Next.js dev server:
-
-```
+```bash
+npm install
 npm run dev
 ```
 
-Open the Remotion Studio:
+`localhost:3000` 접속 → 템플릿 선택 → 값 수정하면 미리보기에 바로 반영 → "Render video" 클릭하면 `public/renders/`에 mp4가 생성되고 다운로드 버튼이 뜬다.
 
-```
+Remotion Studio(사이드바에서 프레임 단위로 디버깅)로 열려면:
+
+```bash
 npx remotion studio
 ```
 
-Render a video locally:
+## 참고
 
-```
-npx remotion render
-```
-
-Upgrade Remotion:
-
-```
-npx remotion upgrade
-```
-
-The following script will set up your Remotion Bundle and Lambda function on AWS:
-
-```
-node deploy.mjs
-```
-
-You should run this script after:
-
-- changing the video template
-- changing `config.mjs`
-- upgrading Remotion to a newer version
-
-## Set up rendering on AWS Lambda
-
-This template supports rendering the videos via [Remotion Lambda](https://remotion.dev/lambda).
-
-1. Copy the `.env.example` file to `.env` and fill in the values.
-   Complete the [Lambda setup guide](https://www.remotion.dev/docs/lambda/setup) to get your AWS credentials.
-
-1. Edit the `config.mjs` file to your desired Lambda settings.
-
-1. Run `node deploy.mjs` to deploy your Lambda function and Remotion Bundle.
-
-## Docs
-
-Get started with Remotion by reading the [fundamentals page](https://www.remotion.dev/docs/the-fundamentals).
-
-## Help
-
-We provide help on our [Discord server](https://remotion.dev/discord).
-
-## Issues
-
-Found an issue with Remotion? [File an issue here](https://remotion.dev/issue).
-
-## License
-
-Note that for some entities a company license is needed. [Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).
+- 렌더링용 웹팩 번들은 dev 서버 프로세스당 한 번만 만들어진다. 컴포지션 코드를 고치면 `npm run dev`를 재시작해야 반영된다.
+- `public/renders/`는 gitignore 처리되어 있다 — 렌더 결과물은 커밋하지 않는다.
