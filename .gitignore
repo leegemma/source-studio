@@ -31,6 +31,9 @@ yarn-error.log*
 # rendered video output
 /public/renders/
 
+# AI-generated images
+/public/generated/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
