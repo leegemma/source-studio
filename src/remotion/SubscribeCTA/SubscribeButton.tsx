@@ -26,7 +26,7 @@ export const SubscribeButton: React.FC<{
         padding: "28px 68px",
         borderRadius: 999,
         background: buttonColor,
-        boxShadow: "0 14px 34px rgba(255, 180, 180, 0.4)",
+        boxShadow: `0 14px 34px ${buttonColor}66`,
         fontFamily: "'Noto Sans KR', sans-serif",
         fontWeight: 600,
         fontSize: 34,

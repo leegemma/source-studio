@@ -49,9 +49,9 @@ export const defaultSubscribeCtaProps: z.infer<typeof subscribeCtaSchema> = {
   captionText: "다음주에도 꿀피부 레시피를 보고싶다면",
   buttonText: "구독하기 (Subscribe)",
   bgColor: "#000000",
-  buttonColor: "#FFC9AE",
+  buttonColor: "#E53935",
   captionColor: "#333333",
-  buttonTextColor: "#4A2E2E",
+  buttonTextColor: "#FFFFFF",
 };
 
 export const SubscribeCTA: React.FC<z.infer<typeof subscribeCtaSchema>> = ({
