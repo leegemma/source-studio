@@ -24,7 +24,7 @@ export const pieClockTimerSchema = z.object({
 export const defaultPieClockTimerProps: z.infer<typeof pieClockTimerSchema> = {
   target: 36,
   label: "분",
-  fontSize: 190,
+  fontSize: 300,
   discColor: "#FFFFFF",
   wedgeColor: "#E3E3E3",
   tickColor: "#9CA3AF",
