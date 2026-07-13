@@ -43,6 +43,9 @@ export type TemplateField = {
   min?: number;
   max?: number;
   step?: number;
+  // Key of a "color" field to render directly under this field (e.g. a text
+  // input paired with its own color) instead of in the general color group.
+  pairColorKey?: string;
 };
 
 export const COUNTER_STAT_PALETTE = [
@@ -86,8 +89,8 @@ export const templates: Template[] = [
     fps: CTA_FPS,
     durationInFrames: CTA_DURATION_IN_FRAMES,
     fields: [
-      { key: "captionText", label: "안내 문구", type: "text" },
-      { key: "buttonText", label: "버튼 문구", type: "text" },
+      { key: "captionText", label: "안내 문구", type: "text", pairColorKey: "captionColor" },
+      { key: "buttonText", label: "버튼 문구", type: "text", pairColorKey: "buttonTextColor" },
       { key: "bgColor", label: "배경색", type: "color" },
       { key: "buttonColor", label: "버튼 색상", type: "color" },
       { key: "captionColor", label: "안내 문구 색상", type: "color" },

@@ -90,14 +90,27 @@ const FieldRow: React.FC<{
   field: TemplateField;
   values: Record<string, unknown>;
   onFieldChange: (key: string, value: string | number) => void;
-}> = ({ field, values, onFieldChange }) => (
-  <div className="flex flex-col gap-1.5">
-    <span className="text-sm text-subtitle">{field.label}</span>
-    <FieldInput
-      field={field}
-      value={values[field.key]}
-      onChange={(value) => onFieldChange(field.key, value)}
-    />
+  pairedColorField?: TemplateField;
+}> = ({ field, values, onFieldChange, pairedColorField }) => (
+  <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm text-subtitle">{field.label}</span>
+      <FieldInput
+        field={field}
+        value={values[field.key]}
+        onChange={(value) => onFieldChange(field.key, value)}
+      />
+    </div>
+    {pairedColorField ? (
+      <div className="flex flex-col gap-1.5 pl-3 border-l border-unfocused-border-color">
+        <span className="text-sm text-subtitle">{pairedColorField.label}</span>
+        <FieldInput
+          field={pairedColorField}
+          value={values[pairedColorField.key]}
+          onChange={(value) => onFieldChange(pairedColorField.key, value)}
+        />
+      </div>
+    ) : null}
   </div>
 );
 
@@ -106,7 +119,8 @@ const FieldGroup: React.FC<{
   fields: TemplateField[];
   values: Record<string, unknown>;
   onFieldChange: (key: string, value: string | number) => void;
-}> = ({ title, fields, values, onFieldChange }) => {
+  fieldsByKey: Map<string, TemplateField>;
+}> = ({ title, fields, values, onFieldChange, fieldsByKey }) => {
   if (fields.length === 0) return null;
   return (
     <div className="flex flex-col gap-2.5">
@@ -118,6 +132,9 @@ const FieldGroup: React.FC<{
             field={field}
             values={values}
             onFieldChange={onFieldChange}
+            pairedColorField={
+              field.pairColorKey ? fieldsByKey.get(field.pairColorKey) : undefined
+            }
           />
         ))}
       </div>
@@ -130,8 +147,14 @@ export const TemplateForm: React.FC<{
   values: Record<string, unknown>;
   onFieldChange: (key: string, value: string | number) => void;
 }> = ({ fields, values, onFieldChange }) => {
+  const fieldsByKey = new Map(fields.map((f) => [f.key, f]));
+  const pairedColorKeys = new Set(
+    fields.map((f) => f.pairColorKey).filter((k): k is string => Boolean(k)),
+  );
   const textFields = fields.filter((f) => f.type !== "color");
-  const colorFields = fields.filter((f) => f.type === "color");
+  const colorFields = fields.filter(
+    (f) => f.type === "color" && !pairedColorKeys.has(f.key),
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -140,12 +163,14 @@ export const TemplateForm: React.FC<{
         fields={textFields}
         values={values}
         onFieldChange={onFieldChange}
+        fieldsByKey={fieldsByKey}
       />
       <FieldGroup
         title="색상"
         fields={colorFields}
         values={values}
         onFieldChange={onFieldChange}
+        fieldsByKey={fieldsByKey}
       />
     </div>
   );
