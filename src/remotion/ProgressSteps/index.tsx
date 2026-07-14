@@ -80,7 +80,7 @@ export const ProgressSteps: React.FC<z.infer<typeof progressStepsSchema>> = ({
                   position: "relative",
                   height: BAR_HEIGHT,
                   borderRadius: BAR_HEIGHT / 2,
-                  border: `1px solid ${trackColor}`,
+                  background: trackColor,
                   overflow: "hidden",
                 }}
               >
