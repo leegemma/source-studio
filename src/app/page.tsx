@@ -34,7 +34,7 @@ const Home: NextPage = () => {
   const durationSeconds = durationSecondsByTemplate[template.id];
   const durationInFrames = Math.max(1, Math.round(durationSeconds * template.fps));
 
-  const onFieldChange = (key: string, value: string | number) => {
+  const onFieldChange = (key: string, value: string | number | string[]) => {
     setPropsByTemplate((prev) => ({
       ...prev,
       [template.id]: { ...prev[template.id], [key]: value },

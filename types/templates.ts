@@ -16,6 +16,18 @@ import {
   defaultSubscribeCtaProps,
 } from "../src/remotion/SubscribeCTA";
 import {
+  ProgressSteps,
+  progressStepsSchema,
+  defaultProgressStepsProps,
+} from "../src/remotion/ProgressSteps";
+import {
+  STEPS_DURATION_IN_FRAMES,
+  STEPS_FPS,
+  STEPS_HEIGHT,
+  STEPS_WIDTH,
+  MAX_STEPS,
+} from "../src/remotion/ProgressSteps/constants";
+import {
   CLOCK_DURATION_IN_FRAMES,
   CLOCK_FPS,
   CLOCK_HEIGHT,
@@ -36,7 +48,7 @@ import {
 export type TemplateField = {
   key: string;
   label: string;
-  type: "text" | "number" | "color" | "slider";
+  type: "text" | "number" | "color" | "slider" | "select" | "step-labels";
   // Quick-pick hex swatches shown under a color field, e.g. a brand palette.
   palette?: string[];
   // Range bounds for "slider" fields.
@@ -46,6 +58,11 @@ export type TemplateField = {
   // Key of a "color" field to render directly under this field (e.g. a text
   // input paired with its own color) instead of in the general color group.
   pairColorKey?: string;
+  // Choices for a "select" field.
+  options?: number[];
+  // For "step-labels": key of the "select"/number field holding how many
+  // of this field's string-array entries are actually shown.
+  countKey?: string;
 };
 
 export const COUNTER_STAT_PALETTE = [
@@ -143,6 +160,29 @@ export const templates: Template[] = [
       { key: "wedgeColor", label: "웨지 색상", type: "color" },
       { key: "tickColor", label: "눈금 색상", type: "color" },
       { key: "numberColor", label: "숫자 색상", type: "color" },
+    ],
+  },
+  {
+    id: "ProgressSteps",
+    label: "단계별 프로그레스바",
+    component: ProgressSteps,
+    schema: progressStepsSchema,
+    defaultProps: defaultProgressStepsProps,
+    width: STEPS_WIDTH,
+    height: STEPS_HEIGHT,
+    fps: STEPS_FPS,
+    durationInFrames: STEPS_DURATION_IN_FRAMES,
+    fields: [
+      {
+        key: "stepCount",
+        label: "단계 수",
+        type: "select",
+        options: Array.from({ length: MAX_STEPS }, (_, i) => i + 1),
+      },
+      { key: "labels", label: "단계별 텍스트", type: "step-labels", countKey: "stepCount" },
+      { key: "barColor", label: "진행 바 색상", type: "color" },
+      { key: "trackColor", label: "트랙 색상", type: "color" },
+      { key: "textColor", label: "텍스트 색상", type: "color" },
     ],
   },
 ];
