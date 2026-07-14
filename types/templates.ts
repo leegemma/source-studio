@@ -164,7 +164,7 @@ export const templates: Template[] = [
   },
   {
     id: "ProgressSteps",
-    label: "단계별 프로그레스바",
+    label: "진행도",
     component: ProgressSteps,
     schema: progressStepsSchema,
     defaultProps: defaultProgressStepsProps,
