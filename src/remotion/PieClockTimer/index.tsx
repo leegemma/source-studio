@@ -1,10 +1,16 @@
 import { loadFont } from "@remotion/google-fonts/NotoSansKR";
 import { zColor } from "@remotion/zod-types";
 import React from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { z } from "zod";
 import { TickMarks } from "./TickMarks";
-import { CIRCLE_SIZE, COUNT_END_FRAME } from "./constants";
+import { CIRCLE_SIZE, CLOCK_DURATION_IN_FRAMES, COUNT_END_FRAME } from "./constants";
+
+// Original design ran the count/wedge-fill over the first 2 of its 3s
+// default. Keep that same fraction of whatever duration is actually set
+// (from the site's per-template duration control) so lengthening the clip
+// stretches the animation instead of just adding a longer static hold.
+const COUNT_END_FRACTION = COUNT_END_FRAME / CLOCK_DURATION_IN_FRAMES;
 
 const { fontFamily } = loadFont("normal", {
   weights: ["900"],
@@ -45,15 +51,17 @@ export const PieClockTimer: React.FC<z.infer<typeof pieClockTimerSchema>> = ({
   numberColor,
 }) => {
   const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const countEndFrame = durationInFrames * COUNT_END_FRACTION;
 
   const count = Math.round(
-    interpolate(frame, [0, COUNT_END_FRAME], [0, target], {
+    interpolate(frame, [0, countEndFrame], [0, target], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
     }),
   );
 
-  const progressDeg = interpolate(frame, [0, COUNT_END_FRAME], [0, 360], {
+  const progressDeg = interpolate(frame, [0, countEndFrame], [0, 360], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
