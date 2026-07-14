@@ -1,7 +1,7 @@
 import { loadFont } from "@remotion/google-fonts/NotoSansKR";
 import { zColor } from "@remotion/zod-types";
 import React from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { z } from "zod";
 import { TickMarks } from "./TickMarks";
 import { CIRCLE_SIZE, CLOCK_DURATION_IN_FRAMES, COUNT_END_FRAME } from "./constants";
@@ -51,7 +51,7 @@ export const PieClockTimer: React.FC<z.infer<typeof pieClockTimerSchema>> = ({
   numberColor,
 }) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const countEndFrame = durationInFrames * COUNT_END_FRACTION;
 
   const count = Math.round(
@@ -66,6 +66,15 @@ export const PieClockTimer: React.FC<z.infer<typeof pieClockTimerSchema>> = ({
     extrapolateRight: "clamp",
   });
 
+  // Bouncy "띵용" pop once the count/wedge-fill finishes, same spring feel
+  // as CounterStat's pop.
+  const pop = spring({
+    frame: frame - countEndFrame,
+    fps,
+    config: { damping: 8, mass: 0.4, stiffness: 150 },
+  });
+  const scale = frame >= countEndFrame ? pop : 1;
+
   return (
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
       <div
@@ -73,6 +82,7 @@ export const PieClockTimer: React.FC<z.infer<typeof pieClockTimerSchema>> = ({
           position: "relative",
           width: CIRCLE_SIZE,
           height: CIRCLE_SIZE,
+          transform: `scale(${scale})`,
         }}
       >
         {/* base white disc */}
