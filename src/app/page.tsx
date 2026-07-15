@@ -4,12 +4,13 @@ import { Player } from "@remotion/player";
 import type { NextPage } from "next";
 import { useMemo, useState } from "react";
 import { ImageGenPanel } from "../components/ImageGenPanel";
+import { PomodoroPanel } from "../components/PomodoroPanel";
 import { RenderControls } from "../components/RenderControls";
 import { Spacing } from "../components/Spacing";
 import { TemplateForm } from "../components/TemplateForm";
 import { getTemplate, templates } from "../../types/templates";
 
-type Mode = { kind: "template"; id: string } | { kind: "image-gen" };
+type Mode = { kind: "template"; id: string } | { kind: "image-gen" } | { kind: "pomodoro" };
 
 const Home: NextPage = () => {
   const [mode, setMode] = useState<Mode>({ kind: "template", id: templates[0].id });
@@ -81,10 +82,22 @@ const Home: NextPage = () => {
         >
           이미지 생성
         </button>
+        <button
+          onClick={() => setMode({ kind: "pomodoro" })}
+          className={`text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
+            mode.kind === "pomodoro"
+              ? "bg-unfocused-border-color text-foreground"
+              : "text-subtitle hover:bg-unfocused-border-color/50"
+          }`}
+        >
+          뽀모도로 타이머
+        </button>
       </div>
 
       {mode.kind === "image-gen" ? (
         <ImageGenPanel />
+      ) : mode.kind === "pomodoro" ? (
+        <PomodoroPanel />
       ) : (
         <>
           {/* center: preview */}
