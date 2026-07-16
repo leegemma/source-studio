@@ -79,8 +79,15 @@ export const PomodoroPanel: React.FC = () => {
       if (generationRef.current === myGeneration) setRinging(false);
     }, 1100);
 
-    if (phase === "work") setCompletedSessions((c) => c + 1);
-    setPhase(phase === "work" ? "break" : "work");
+    if (phase === "work") {
+      // 집중 종료 → 휴식으로 자동 전환, 계속 진행
+      setCompletedSessions((c) => c + 1);
+      setPhase("break");
+    } else {
+      // 휴식 종료 → 다음 집중으로 자동 시작하지 않고 정지 (다시 시작 누를 때까지 대기)
+      setRunning(false);
+      setPhase("work");
+    }
     // phase는 여기서 직접 읽고 다음 값을 계산하므로 의도적으로 최신 phase만 사용.
   }, [secondsLeft, running]);
 
