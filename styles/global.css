@@ -38,6 +38,7 @@
   --radius-geist: var(--geist-border-radius);
   --font-geist: var(--geist-font);
   --animate-spinner: spinner 1.2s linear infinite;
+  --animate-alarm-shake: alarm-shake 0.35s ease-in-out 3;
 
   @keyframes spinner {
     0% {
@@ -45,6 +46,19 @@
     }
     100% {
       opacity: 0.15;
+    }
+  }
+
+  @keyframes alarm-shake {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-8deg);
+    }
+    75% {
+      transform: rotate(8deg);
     }
   }
 }

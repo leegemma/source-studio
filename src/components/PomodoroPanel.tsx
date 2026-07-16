@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 
 type Phase = "work" | "break";
@@ -48,22 +48,41 @@ export const PomodoroPanel: React.FC = () => {
   const [secondsLeft, setSecondsLeft] = useState(workMinutes * 60);
   const [running, setRunning] = useState(false);
   const [completedSessions, setCompletedSessions] = useState(0);
+  const [ringing, setRinging] = useState(false);
 
+  const ringTimeoutRef = useRef<number | null>(null);
+  // reset()마다 증가시켜서, 리셋 이전에 예약된 알람 해제 타이머가
+  // 리셋 이후 상태를 잘못 건드리지 못하게 막는 안전장치.
+  const generationRef = useRef(0);
+
+  // 1초마다 카운트다운만 담당 — 부수효과(사운드/phase전환/세션카운트) 없음.
+  // (setState 콜백은 React 개발 모드에서 두 번 호출될 수 있어서, 콜백 안에
+  // 다른 setState를 부르면 phase가 두 번 뒤집혀 원상태로 되돌아가면서
+  // secondsLeft가 0에 멈추고 매 틱마다 세션이 잘못 증가하는 버그가 있었음.)
   useEffect(() => {
     if (!running) return;
     const id = window.setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s > 1) return s - 1;
-        playBeep();
-        setPhase((prevPhase) => {
-          if (prevPhase === "work") setCompletedSessions((c) => c + 1);
-          return prevPhase === "work" ? "break" : "work";
-        });
-        return 0;
-      });
+      setSecondsLeft((s) => Math.max(0, s - 1));
     }, 1000);
     return () => window.clearInterval(id);
   }, [running]);
+
+  // secondsLeft가 0에 도달했을 때만 처리하는 별도 effect — 부수효과는 여기서만.
+  useEffect(() => {
+    if (!running || secondsLeft > 0) return;
+
+    playBeep();
+    setRinging(true);
+    const myGeneration = generationRef.current;
+    if (ringTimeoutRef.current) window.clearTimeout(ringTimeoutRef.current);
+    ringTimeoutRef.current = window.setTimeout(() => {
+      if (generationRef.current === myGeneration) setRinging(false);
+    }, 1100);
+
+    if (phase === "work") setCompletedSessions((c) => c + 1);
+    setPhase(phase === "work" ? "break" : "work");
+    // phase는 여기서 직접 읽고 다음 값을 계산하므로 의도적으로 최신 phase만 사용.
+  }, [secondsLeft, running]);
 
   // phase 전환 시에만 리셋 — workMinutes/breakMinutes 자체 변경은 아래 별도 effect에서 처리
   useEffect(() => {
@@ -76,6 +95,12 @@ export const PomodoroPanel: React.FC = () => {
   }, [workMinutes, breakMinutes]);
 
   const reset = () => {
+    generationRef.current += 1;
+    if (ringTimeoutRef.current) {
+      window.clearTimeout(ringTimeoutRef.current);
+      ringTimeoutRef.current = null;
+    }
+    setRinging(false);
     setRunning(false);
     setPhase("work");
     setCompletedSessions(0);
@@ -96,6 +121,7 @@ export const PomodoroPanel: React.FC = () => {
             width: 320,
             height: 320,
             background: `conic-gradient(${color} ${progress * 360}deg, rgba(255,255,255,0.1) ${progress * 360}deg)`,
+            animation: ringing ? "alarm-shake 0.35s ease-in-out 3" : undefined,
           }}
         >
           <div
@@ -103,7 +129,7 @@ export const PomodoroPanel: React.FC = () => {
             style={{ width: 280, height: 280 }}
           >
             <div className="text-sm uppercase tracking-wide text-subtitle mb-2">
-              {PHASE_LABEL[phase]}
+              {ringing ? "⏰ 알람" : PHASE_LABEL[phase]}
             </div>
             <div className="text-6xl font-bold tabular-nums" style={{ color }}>
               {formatTime(secondsLeft)}
