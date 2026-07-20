@@ -67,6 +67,7 @@ const Home: NextPage = () => {
     <div className="flex h-screen overflow-hidden">
       {/* left: template list */}
       <div className="w-56 shrink-0 border-r border-unfocused-border-color p-4 flex flex-col gap-1 overflow-y-auto">
+        <div className="px-2 mb-4 text-lg font-bold text-foreground">source-studio</div>
         <span className="text-xs uppercase tracking-wide text-subtitle font-semibold px-2 mb-1">
           템플릿
         </span>
