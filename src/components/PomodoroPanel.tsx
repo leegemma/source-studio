@@ -68,6 +68,9 @@ export const PomodoroPanel: React.FC = () => {
   }, [running]);
 
   // secondsLeft가 0에 도달했을 때만 처리하는 별도 effect — 부수효과는 여기서만.
+  // 알람이 흔들리는 모습을 실제로 보여준 다음에 phase를 전환한다 —
+  // 흔들림과 동시에 휴식이 시작되면 사실상 안 보이는 것과 같아서,
+  // 전환 자체를 알람 애니메이션이 끝날 때까지 지연시킴.
   useEffect(() => {
     if (!running || secondsLeft > 0) return;
 
@@ -76,18 +79,18 @@ export const PomodoroPanel: React.FC = () => {
     const myGeneration = generationRef.current;
     if (ringTimeoutRef.current) window.clearTimeout(ringTimeoutRef.current);
     ringTimeoutRef.current = window.setTimeout(() => {
-      if (generationRef.current === myGeneration) setRinging(false);
+      if (generationRef.current !== myGeneration) return;
+      setRinging(false);
+      if (phase === "work") {
+        // 집중 종료 → 휴식으로 자동 전환, 계속 진행
+        setCompletedSessions((c) => c + 1);
+        setPhase("break");
+      } else {
+        // 휴식 종료 → 다음 집중으로 자동 시작하지 않고 정지 (다시 시작 누를 때까지 대기)
+        setRunning(false);
+        setPhase("work");
+      }
     }, 1100);
-
-    if (phase === "work") {
-      // 집중 종료 → 휴식으로 자동 전환, 계속 진행
-      setCompletedSessions((c) => c + 1);
-      setPhase("break");
-    } else {
-      // 휴식 종료 → 다음 집중으로 자동 시작하지 않고 정지 (다시 시작 누를 때까지 대기)
-      setRunning(false);
-      setPhase("work");
-    }
     // phase는 여기서 직접 읽고 다음 값을 계산하므로 의도적으로 최신 phase만 사용.
   }, [secondsLeft, running]);
 
@@ -123,12 +126,11 @@ export const PomodoroPanel: React.FC = () => {
       {/* timer ring */}
       <div className="flex flex-1 items-center justify-center h-full">
         <div
-          className="relative flex items-center justify-center rounded-full"
+          className={`relative flex items-center justify-center rounded-full ${ringing ? "animate-alarm-shake" : ""}`}
           style={{
             width: 320,
             height: 320,
             background: `conic-gradient(${color} ${progress * 360}deg, rgba(255,255,255,0.1) ${progress * 360}deg)`,
-            animation: ringing ? "alarm-shake 0.35s ease-in-out 3" : undefined,
           }}
         >
           <div
