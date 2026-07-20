@@ -6,11 +6,26 @@ import { useMemo, useState } from "react";
 import { ImageGenPanel } from "../components/ImageGenPanel";
 import { PomodoroPanel } from "../components/PomodoroPanel";
 import { RenderControls } from "../components/RenderControls";
+import {
+  BarChartIcon,
+  BellIcon,
+  ClockIcon,
+  ImageIcon,
+  ListChecksIcon,
+  TimerIcon,
+} from "../components/SidebarIcons";
 import { Spacing } from "../components/Spacing";
 import { TemplateForm } from "../components/TemplateForm";
 import { getTemplate, templates } from "../../types/templates";
 
 type Mode = { kind: "template"; id: string } | { kind: "image-gen" } | { kind: "pomodoro" };
+
+const TEMPLATE_ICON: Record<string, React.FC> = {
+  SubscribeCTA: BellIcon,
+  CounterStat: BarChartIcon,
+  PieClockTimer: ClockIcon,
+  ProgressSteps: ListChecksIcon,
+};
 
 const Home: NextPage = () => {
   const [mode, setMode] = useState<Mode>({ kind: "template", id: templates[0].id });
@@ -52,44 +67,51 @@ const Home: NextPage = () => {
     <div className="flex h-screen overflow-hidden">
       {/* left: template list */}
       <div className="w-56 shrink-0 border-r border-unfocused-border-color p-4 flex flex-col gap-1 overflow-y-auto">
-        <span className="text-xs uppercase tracking-wide text-subtitle px-2 mb-1">
+        <span className="text-xs uppercase tracking-wide text-[#f97316] font-semibold px-2 mb-1">
           템플릿
         </span>
-        {templates.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setMode({ kind: "template", id: t.id })}
-            className={`text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
-              mode.kind === "template" && mode.id === t.id
-                ? "bg-unfocused-border-color text-foreground"
-                : "text-subtitle hover:bg-unfocused-border-color/50"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
+        {templates.map((t) => {
+          const Icon = TEMPLATE_ICON[t.id];
+          const active = mode.kind === "template" && mode.id === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setMode({ kind: "template", id: t.id })}
+              className={`flex items-center gap-2.5 text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
+                active
+                  ? "bg-unfocused-border-color text-foreground"
+                  : "text-subtitle hover:bg-unfocused-border-color/50 hover:text-foreground"
+              }`}
+            >
+              {Icon ? <Icon /> : null}
+              {t.label}
+            </button>
+          );
+        })}
 
-        <span className="text-xs uppercase tracking-wide text-subtitle px-2 mb-1 mt-4">
+        <span className="text-xs uppercase tracking-wide text-[#f97316] font-semibold px-2 mb-1 mt-4">
           도구
         </span>
         <button
           onClick={() => setMode({ kind: "image-gen" })}
-          className={`text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
+          className={`flex items-center gap-2.5 text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
             mode.kind === "image-gen"
               ? "bg-unfocused-border-color text-foreground"
-              : "text-subtitle hover:bg-unfocused-border-color/50"
+              : "text-subtitle hover:bg-unfocused-border-color/50 hover:text-foreground"
           }`}
         >
+          <ImageIcon />
           이미지 생성
         </button>
         <button
           onClick={() => setMode({ kind: "pomodoro" })}
-          className={`text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
+          className={`flex items-center gap-2.5 text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
             mode.kind === "pomodoro"
               ? "bg-unfocused-border-color text-foreground"
-              : "text-subtitle hover:bg-unfocused-border-color/50"
+              : "text-subtitle hover:bg-unfocused-border-color/50 hover:text-foreground"
           }`}
         >
+          <TimerIcon />
           뽀모도로 타이머
         </button>
       </div>
