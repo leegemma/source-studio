@@ -67,7 +67,7 @@ const Home: NextPage = () => {
     <div className="flex h-screen overflow-hidden">
       {/* left: template list */}
       <div className="w-56 shrink-0 border-r border-unfocused-border-color p-4 flex flex-col gap-1 overflow-y-auto">
-        <span className="text-xs uppercase tracking-wide text-[#f97316] font-semibold px-2 mb-1">
+        <span className="text-xs uppercase tracking-wide text-subtitle font-semibold px-2 mb-1">
           템플릿
         </span>
         {templates.map((t) => {
@@ -89,7 +89,7 @@ const Home: NextPage = () => {
           );
         })}
 
-        <span className="text-xs uppercase tracking-wide text-[#f97316] font-semibold px-2 mb-1 mt-4">
+        <span className="text-xs uppercase tracking-wide text-subtitle font-semibold px-2 mb-1 mt-4">
           도구
         </span>
         <button
