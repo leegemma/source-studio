@@ -79,6 +79,7 @@ export const COUNTER_STAT_PALETTE = [
 export type Template = {
   id: string;
   label: string;
+  description: string;
   // Heterogeneous registry — each template has a differently-shaped props
   // type, so the array element type can't stay generic without fighting
   // React's contravariant component typing. Kept loose here; each
@@ -98,6 +99,7 @@ export const templates: Template[] = [
   {
     id: "SubscribeCTA",
     label: "구독 유도",
+    description: "구독 버튼 애니메이션이 들어간 영상 하단 CTA",
     component: SubscribeCTA,
     schema: subscribeCtaSchema,
     defaultProps: defaultSubscribeCtaProps,
@@ -117,6 +119,7 @@ export const templates: Template[] = [
   {
     id: "CounterStat",
     label: "카운터 통계 카드",
+    description: "숫자가 올라가는 임팩트 있는 통계 카드",
     component: CounterStat,
     schema: counterStatSchema,
     defaultProps: defaultCounterStatProps,
@@ -145,6 +148,7 @@ export const templates: Template[] = [
   {
     id: "PieClockTimer",
     label: "파이 시계 타이머",
+    description: "원판이 채워지며 숫자가 카운트되는 타이머",
     component: PieClockTimer,
     schema: pieClockTimerSchema,
     defaultProps: defaultPieClockTimerProps,
@@ -165,6 +169,7 @@ export const templates: Template[] = [
   {
     id: "ProgressSteps",
     label: "진행도",
+    description: "단계별 라벨과 프로그레스바가 순서대로 채워지는 영상",
     component: ProgressSteps,
     schema: progressStepsSchema,
     defaultProps: defaultProgressStepsProps,

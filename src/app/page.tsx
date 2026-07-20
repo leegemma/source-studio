@@ -3,6 +3,7 @@
 import { Player } from "@remotion/player";
 import type { NextPage } from "next";
 import { useMemo, useState } from "react";
+import { HomeCard, HomePanel } from "../components/HomePanel";
 import { ImageGenPanel } from "../components/ImageGenPanel";
 import { PomodoroPanel } from "../components/PomodoroPanel";
 import { RenderControls } from "../components/RenderControls";
@@ -18,7 +19,11 @@ import { Spacing } from "../components/Spacing";
 import { TemplateForm } from "../components/TemplateForm";
 import { getTemplate, templates } from "../../types/templates";
 
-type Mode = { kind: "template"; id: string } | { kind: "image-gen" } | { kind: "pomodoro" };
+type Mode =
+  | { kind: "home" }
+  | { kind: "template"; id: string }
+  | { kind: "image-gen" }
+  | { kind: "pomodoro" };
 
 const TEMPLATE_ICON: Record<string, React.FC> = {
   SubscribeCTA: BellIcon,
@@ -27,8 +32,32 @@ const TEMPLATE_ICON: Record<string, React.FC> = {
   ProgressSteps: ListChecksIcon,
 };
 
+const HOME_CARDS: HomeCard[] = [
+  ...templates.map((t, i) => ({
+    id: t.id,
+    label: t.label,
+    description: t.description,
+    icon: TEMPLATE_ICON[t.id],
+    iconBg: ["#8a6d3b", "#3b5fe2", "#2E4C18", "#a855f7"][i % 4],
+  })),
+  {
+    id: "image-gen",
+    label: "이미지 생성",
+    description: "OpenAI로 프롬프트 기반 이미지를 생성",
+    icon: ImageIcon,
+    iconBg: "#7c3aed",
+  },
+  {
+    id: "pomodoro",
+    label: "뽀모도로 타이머",
+    description: "집중/휴식을 반복하는 실시간 카운트다운 타이머",
+    icon: TimerIcon,
+    iconBg: "#ef4444",
+  },
+];
+
 const Home: NextPage = () => {
-  const [mode, setMode] = useState<Mode>({ kind: "template", id: templates[0].id });
+  const [mode, setMode] = useState<Mode>({ kind: "home" });
   const templateId = mode.kind === "template" ? mode.id : templates[0].id;
   const template = getTemplate(templateId) ?? templates[0];
 
@@ -63,11 +92,24 @@ const Home: NextPage = () => {
 
   const playerKey = useMemo(() => template.id, [template.id]);
 
+  const selectFromHome = (id: string) => {
+    if (id === "image-gen" || id === "pomodoro") {
+      setMode({ kind: id });
+    } else {
+      setMode({ kind: "template", id });
+    }
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* left: template list */}
       <div className="w-56 shrink-0 border-r border-unfocused-border-color p-4 flex flex-col gap-1 overflow-y-auto">
-        <div className="px-2 mb-4 text-lg font-bold text-foreground">source-studio</div>
+        <button
+          onClick={() => setMode({ kind: "home" })}
+          className="px-2 mb-4 text-lg font-bold text-foreground text-left"
+        >
+          source-studio
+        </button>
         <span className="text-xs uppercase tracking-wide text-subtitle font-semibold px-2 mb-1">
           템플릿
         </span>
@@ -117,7 +159,9 @@ const Home: NextPage = () => {
         </button>
       </div>
 
-      {mode.kind === "image-gen" ? (
+      {mode.kind === "home" ? (
+        <HomePanel cards={HOME_CARDS} onSelect={selectFromHome} />
+      ) : mode.kind === "image-gen" ? (
         <ImageGenPanel />
       ) : mode.kind === "pomodoro" ? (
         <PomodoroPanel />
