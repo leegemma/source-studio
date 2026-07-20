@@ -13,9 +13,9 @@ export const HomePanel: React.FC<{
   onSelect: (id: string) => void;
 }> = ({ cards, onSelect }) => {
   return (
-    <div className="flex-1 overflow-y-auto p-10">
-      <h1 className="text-3xl font-bold text-foreground mb-6">기능 살펴보기</h1>
-      <div className="grid grid-cols-3 gap-4 max-w-4xl">
+    <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto p-10">
+      <h1 className="text-3xl font-bold text-foreground mb-6 w-full max-w-4xl">기능 살펴보기</h1>
+      <div className="grid grid-cols-3 gap-4 max-w-4xl w-full">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
