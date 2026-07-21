@@ -690,9 +690,11 @@ export const TranscriptEditPanel: React.FC = () => {
         <Button secondary onClick={resetAll}>
           새로 시작하기
         </Button>
-        <Button primary disabled={phase === "generating"} loading={phase === "generating"} onClick={generate}>
-          수정본 생성 (음성 + 자막)
-        </Button>
+        <div className="flex-1">
+          <Button primary disabled={phase === "generating"} loading={phase === "generating"} onClick={generate}>
+            수정본 생성 (음성 + 자막)
+          </Button>
+        </div>
       </div>
     </div>
   );
