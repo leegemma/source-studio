@@ -1,0 +1,25 @@
+# Python virtual env -- local and machine-specific, never commit
+venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Working directories: uploads, generated outputs, and intermediate/transcript
+# artifacts churn constantly and are pure scratch data, not source -- keep the
+# directories present (via .gitkeep) but never track their contents.
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
+temp/*
+!temp/.gitkeep
+transcripts/*
+!transcripts/.gitkeep
+subtitles/*
+!subtitles/.gitkeep
+
+# User-supplied BGM tracks -- personal/possibly-copyrighted audio, not source.
+music/*
+!music/.gitkeep

@@ -21,6 +21,10 @@ export default [
       "next-env.d.ts",
       "next.config.js",
       "deploy.mjs",
+      // Python backend (Flask + venv) -- not JS/TS source, shouldn't be linted
+      // as if it were. venv/ especially ships vendored JS assets inside its
+      // own dependencies (e.g. werkzeug's debugger) that aren't ours to lint.
+      "auto-edit-backend/**",
     ],
   },
   // Base JS recommended

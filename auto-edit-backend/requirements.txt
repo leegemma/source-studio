@@ -1,0 +1,21 @@
+whisperx==3.8.6
+flask==3.1.3
+silero-vad==6.2.1
+panns-inference==0.1.1
+
+# --- scripts/enhance_audio.py (사운드 개선 tab) -----------------------------
+# deepfilternet's own PyPI metadata pins numpy<2.0, which directly conflicts
+# with whisperx's numpy>=2.1.0 -- listing a bare `deepfilternet==0.5.6` line
+# here would make `pip install -r requirements.txt` fail outright with
+# ResolutionImpossible (verified: it does, in one shot). Empirically verified
+# (real DeepFilterNet inference run against a real file, output compared
+# byte-for-byte) that deepfilternet works completely fine with numpy>=2.1
+# despite the metadata pin -- deepfilterlib (the actual compiled Rust
+# binding, installed below) only requires numpy>=1.22 with NO upper bound;
+# the <2.0 ceiling is deepfilternet's own (pure-Python orchestration layer)
+# overly conservative constraint, not a real runtime incompatibility.
+#
+# So: install deepfilternet's real dependencies normally (no numpy conflict)...
+deepfilterlib==0.5.6
+loguru>=0.5
+appdirs<2.0,>=1.4

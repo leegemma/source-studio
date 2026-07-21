@@ -3,6 +3,10 @@
 import { Player } from "@remotion/player";
 import type { NextPage } from "next";
 import { useMemo, useState } from "react";
+import { EnhancePanel } from "../components/auto-edit/EnhancePanel";
+import { SilenceRemovalPanel } from "../components/auto-edit/SilenceRemovalPanel";
+import { TranscriptEditPanel } from "../components/auto-edit/TranscriptEditPanel";
+import { VideoProcessPanel } from "../components/auto-edit/VideoProcessPanel";
 import { HomeCard, HomePanel } from "../components/HomePanel";
 import { ImageGenPanel } from "../components/ImageGenPanel";
 import { PomodoroPanel } from "../components/PomodoroPanel";
@@ -11,9 +15,13 @@ import {
   BarChartIcon,
   BellIcon,
   ClockIcon,
+  FilmIcon,
   ImageIcon,
   ListChecksIcon,
+  SparkleMicIcon,
+  TextEditIcon,
   TimerIcon,
+  WaveformIcon,
 } from "../components/SidebarIcons";
 import { Spacing } from "../components/Spacing";
 import { TemplateForm } from "../components/TemplateForm";
@@ -23,7 +31,11 @@ type Mode =
   | { kind: "home" }
   | { kind: "template"; id: string }
   | { kind: "image-gen" }
-  | { kind: "pomodoro" };
+  | { kind: "pomodoro" }
+  | { kind: "auto-edit-video" }
+  | { kind: "auto-edit-silence" }
+  | { kind: "auto-edit-enhance" }
+  | { kind: "auto-edit-transcript" };
 
 const TEMPLATE_ICON: Record<string, React.FC> = {
   SubscribeCTA: BellIcon,
@@ -54,7 +66,42 @@ const HOME_CARDS: HomeCard[] = [
     icon: TimerIcon,
     iconBg: "#ef4444",
   },
+  {
+    id: "auto-edit-video",
+    label: "영상 처리",
+    description: "무음 제거 + 자막 + BGM을 한 번에 처리",
+    icon: FilmIcon,
+    iconBg: "#0ea5e9",
+  },
+  {
+    id: "auto-edit-silence",
+    label: "음성 무음 제거",
+    description: "말 사이 무음 구간을 자동으로 잘라냄",
+    icon: WaveformIcon,
+    iconBg: "#14b8a6",
+  },
+  {
+    id: "auto-edit-enhance",
+    label: "사운드 개선",
+    description: "노이즈 제거 + 음량 정규화 + 저음 럼블 제거",
+    icon: SparkleMicIcon,
+    iconBg: "#f59e0b",
+  },
+  {
+    id: "auto-edit-transcript",
+    label: "텍스트 편집",
+    description: "대본을 보며 클릭으로 음성/영상을 편집",
+    icon: TextEditIcon,
+    iconBg: "#6366f1",
+  },
 ];
+
+const AUTO_EDIT_IDS = new Set([
+  "auto-edit-video",
+  "auto-edit-silence",
+  "auto-edit-enhance",
+  "auto-edit-transcript",
+]);
 
 const Home: NextPage = () => {
   const [mode, setMode] = useState<Mode>({ kind: "home" });
@@ -95,6 +142,8 @@ const Home: NextPage = () => {
   const selectFromHome = (id: string) => {
     if (id === "image-gen" || id === "pomodoro") {
       setMode({ kind: id });
+    } else if (AUTO_EDIT_IDS.has(id)) {
+      setMode({ kind: id } as Mode);
     } else {
       setMode({ kind: "template", id });
     }
@@ -157,6 +206,31 @@ const Home: NextPage = () => {
           <TimerIcon />
           뽀모도로 타이머
         </button>
+
+        <span className="text-xs uppercase tracking-wide text-subtitle font-semibold px-2 mb-1 mt-4">
+          자동 편집
+        </span>
+        {(
+          [
+            { kind: "auto-edit-video", label: "영상 처리", Icon: FilmIcon },
+            { kind: "auto-edit-silence", label: "음성 무음 제거", Icon: WaveformIcon },
+            { kind: "auto-edit-enhance", label: "사운드 개선", Icon: SparkleMicIcon },
+            { kind: "auto-edit-transcript", label: "텍스트 편집", Icon: TextEditIcon },
+          ] as const
+        ).map(({ kind, label, Icon }) => (
+          <button
+            key={kind}
+            onClick={() => setMode({ kind })}
+            className={`flex items-center gap-2.5 text-left px-3 py-2 rounded-geist text-sm font-medium transition-colors duration-150 ease-in-out ${
+              mode.kind === kind
+                ? "bg-unfocused-border-color text-foreground"
+                : "text-subtitle hover:bg-unfocused-border-color/50 hover:text-foreground"
+            }`}
+          >
+            <Icon />
+            {label}
+          </button>
+        ))}
       </div>
 
       {mode.kind === "home" ? (
@@ -165,6 +239,14 @@ const Home: NextPage = () => {
         <ImageGenPanel />
       ) : mode.kind === "pomodoro" ? (
         <PomodoroPanel />
+      ) : mode.kind === "auto-edit-silence" ? (
+        <SilenceRemovalPanel />
+      ) : mode.kind === "auto-edit-video" ? (
+        <VideoProcessPanel />
+      ) : mode.kind === "auto-edit-enhance" ? (
+        <EnhancePanel />
+      ) : mode.kind === "auto-edit-transcript" ? (
+        <TranscriptEditPanel />
       ) : (
         <>
           {/* center: preview */}
